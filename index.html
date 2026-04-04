@@ -1,242 +1,256 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>庫存管理系統</title>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft JhengHei", sans-serif; background: #f0f2f5; min-height: 100vh; padding: 12px; }
-        /* Desktop (>= 769px) */
-@media (min-width: 769px) { body { padding: 20px; } .container { max-width: 1600px; margin: 0 auto; } h1 { font-size: 1.8em; margin-bottom: 30px; } .card { padding: 24px; margin-bottom: 20px; } .stats { gap: 16px; } .stat-item { padding: 20px 24px; } .stat-item .number { font-size: 2em; } .inventory-table { font-size: 0.9em; } .inventory-table th, .inventory-table td { word-wrap: break-word; overflow-wrap: break-word; padding: 12px 10px; }
-        }
-
-        /* Desktop specific: wider columns */
-        .inventory-table { font-size: 0.95em; }
-        .inventory-table th, .inventory-table td { padding: 14px 12px; } }
-        /* Mobile (<= 480px) */
-/* Mobile (<= 480px) */
-/* Mobile (<= 480px) - iPhone friendly */
-@media (max-width: 480px) { body { padding: 12px; } .container { max-width: 100%; padding-left: 0; padding-right: 0; } h1 { font-size: 1.4em; margin-bottom: 16px; padding-left: 12px; padding-right: 12px; } .card { padding: 16px; margin-bottom: 14px; border-radius: 8px; margin-left: 0; margin-right: 0; } .stats { gap: 10px; margin-bottom: 14px; justify-content: space-between; padding-left: 0; padding-right: 0; } .stat-item { flex: 1 1 auto; padding: 14px 10px; min-width: calc(25% - 8px); margin: 0; } .stat-item .number { font-size: 1.6em; } .stat-item .label { font-size: 0.75em; } .inventory-table { font-size: 0.8em; margin: 0; } .inventory-table th, .inventory-table td { padding: 8px 6px; } }
-
-/* Portrait orientation - 3 columns */
-@media (max-width: 480px) and (orientation: portrait) { .stats { flex-wrap: wrap; gap: 8px; } .stat-item { flex: 1 1 calc(33% - 6px); padding: 12px 8px; } .stat-item .number { font-size: 1.4em; } .stat-item .label { font-size: 0.7em; } .inventory-table { font-size: 0.75em; } .inventory-table th, .inventory-table td { padding: 6px 4px; } .inventory-table th[style*="width:200px"] { width: 90px !important; }  }
-
-/* Landscape orientation - 4 columns */
-/* Mobile Landscape (<=480px, landscape) - iPhone 17 */
-@media (max-width: 480px) and (orientation: landscape) { 
-    body { padding: 10px; } 
-    .container { max-width: 100%; } 
-    h1 { font-size: 1.2em; margin-bottom: 10px; }
-    .card { padding: 10px; margin-bottom: 8px; }
-    .stats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
-    .stat-item { flex: 1 1 calc(25% - 6px); padding: 10px 8px; text-align: center; }
-    .stat-item .number { font-size: 1.4em; }
-    .stat-item .label { font-size: 0.65em; }
-    .section-title { font-size: 0.85em; padding: 6px; margin: 8px 0 4px 0; }
-    .inventory-table { font-size: 0.75em; width: 100%; overflow-x: auto; }
-    .inventory-table th, .inventory-table td { padding: 5px 3px; }
-    
-    .inventory-table th[style*="width:500px"] { width: 100px !important; }
-}
-
-/* Tablet (481px - 768px) */
-@media (max-width: 768px) and (min-width: 481px) { body { padding: 12px; } .container { max-width: 100%; } h1 { font-size: 1.5em; margin-bottom: 20px; } .card { padding: 18px; margin-bottom: 14px; border-radius: 8px; } .stats { gap: 10px; margin-bottom: 14px; } .stat-item { flex: 1 1 calc(33% - 6px); padding: 14px 10px; } .stat-item .number { font-size: 1.7em; } .stat-item .label { font-size: 0.8em; } .inventory-table { font-size: 0.82em; } .inventory-table th, .inventory-table td { padding: 8px 6px; } }
-
-/* Desktop (>= 769px) */
-@media (min-width: 769px) { body { padding: 24px; } .container { max-width: 1600px; margin: 0 auto; } h1 { font-size: 2em; margin-bottom: 30px; } .card { padding: 28px; margin-bottom: 24px; } .stats { gap: 20px; } .stat-item { padding: 24px 28px; } .stat-item .number { font-size: 2.2em; } .stat-item .label { font-size: 1em; } .inventory-table { font-size: 1.05em; } .inventory-table th, .inventory-table td { padding: 16px 14px; } }
-        .card { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; }
-        .card h2 { color: #333; margin-bottom: 16px; font-size: 1.1em; font-weight: 600; border-bottom: 2px solid #1976d2; padding-bottom: 8px; }
-        .info-box { background: #f5f5f5; border-radius: 4px; padding: 16px; margin-bottom: 16px; font-size: 0.9em; color: #555; border-left: 4px solid #1976d2; }
-        .stats { display: flex; flex-wrap: wrap; }
-        .stat-item { background: #1976d2; color: white; border-radius: 4px; text-align: center; }
-        .stat-item.zero { background: #616161; }
-        .stat-item.stock { background: #2e7d32; }
-        .stat-item .number { font-weight: bold; }
-        .stat-item .label { opacity: 0.9; }
-        .inventory-table { width: 100%; overflow-x: auto; border-collapse: collapse; background: white; table-layout: fixed; }
-        .inventory-table th { background: #455a64; color: white; text-align: center; font-weight: 600; white-space: nowrap; }
-        .inventory-table td { word-wrap: break-word; overflow-wrap: break-word;  border-bottom: 1px solid #e0e0e0; text-align: center; vertical-align: middle; padding: 8px; }
-        .inventory-table tbody tr:hover { background: #f5f5f5; }
-        .inventory-table .code { font-weight: 700; color: #0d47a1; font-family: monospace; white-space: nowrap; font-size: 1.1em; }
-        .inventory-table .name { text-align: left; word-break: break-all; overflow-wrap: break-word; white-space: normal; }
-        .inventory-table .qty { font-weight: bold; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; min-height: 100vh; }
+        
+        .container { max-width: 100%; margin: 0 auto; }
+        h1 { background: #1a237e; color: white; padding: 16px 20px; font-size: 1.4em; text-align: center; margin-bottom: 0; }
+        
+        .stats-bar { display: flex; flex-wrap: wrap; background: white; border-bottom: 3px solid #1a237e; }
+        .stat-item { flex: 1 1 50%; padding: 16px; text-align: center; border-right: 1px solid #e0e0e0; }
+        .stat-item:last-child { border-right: none; }
+        .stat-item .number { font-size: 2em; font-weight: 800; color: #1a237e; }
+        .stat-item .label { font-size: 0.85em; color: #666; margin-top: 4px; }
+        .stat-item.zero { background: #fafafa; }
+        .stat-item.stock { background: #e8f5e9; }
+        
+        .card { background: white; margin: 12px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }
+        .card-title { background: #3949ab; color: white; padding: 12px 16px; font-size: 1em; font-weight: 600; }
+        .card-title.zero-cat { background: #616161; }
+        
+        .search-bar { display: flex; gap: 8px; padding: 12px; background: #fff; border-bottom: 1px solid #e0e0e0; }
+        .search-bar input { flex: 1; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1em; }
+        .search-bar input:focus { border-color: #1a237e; outline: none; }
+        
+        .btn { padding: 12px 20px; border: none; border-radius: 8px; font-size: 1em; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-scan { background: #d32f2f; color: white; }
+        .btn-search { background: #1976d2; color: white; }
+        .btn-edit { background: #f57c00; color: white; }
+        .btn-done { background: #388e3c; color: white; display: none; }
+        
+        .inventory-table { width: 100%; border-collapse: collapse; background: white; }
+        .inventory-table th { background: #303f9f; color: white; padding: 14px 12px; text-align: center; font-weight: 600; font-size: 0.9em; }
+        .inventory-table td { padding: 14px 12px; text-align: center; border-bottom: 1px solid #e0e0e0; font-size: 1em; }
+        .inventory-table .code { font-weight: 700; color: #1a237e; font-family: monospace; }
+        .inventory-table .name { text-align: left !important; max-width: 200px; }
+        .inventory-table .qty { font-weight: bold; font-size: 1.1em; }
         .inventory-table .qty.zero { color: #999; }
         .inventory-table .qty.has-stock { color: #2e7d32; }
-        .inventory-table .verified { font-size: 1.2em; }
-        .inventory-table input[type="checkbox"] { cursor: pointer; accent-color: #1976d2; width: 20px; height: 20px; }
-        .inventory-table input[type="text"] { width: 100%; min-height: 36px; padding: 8px 10px; border: 1px solid #bdbdbd; border-radius: 4px; font-size: 1em; line-height: 1.4; }
-        .inventory-table input[type="text"]:focus { outline: none; border-color: #1976d2; }
-        .inventory-table input[type="text"]:disabled { background: #f5f5f5; color: #666; }
-        .inventory-table tr.verified-row { background: #e8f5e9; }
-        .last-updated { text-align: right; color: #888; font-size: 0.85em; margin-top: 16px; }
-        .action-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-        .search-box { flex: 1; min-width: 150px; display: flex; gap: 8px; }
-        .search-input { flex: 1; padding: 10px 14px; border: 1px solid #ddd; border-radius: 6px; font-size: 1em; }
-        .search-input:focus { outline: none; border-color: #1976d2; }
-        .scan-btn { background: #d32f2f; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 1em; white-space: nowrap; }
-        .scan-btn:hover { background: #b71c1c; }
-        .edit-btn { background: #f57c00; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 1em; white-space: nowrap; }
-        .edit-btn:hover { background: #e65100; }
-        .done-btn { background: #2e7d32; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 1em; white-space: nowrap; display: none; }
-        .done-btn:hover { background: #1b5e20; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; overflow-y: auto; }
-        .modal.show { display: flex; align-items: center; justify-content: center; }
-        .modal-content { background: white; border-radius: 12px; padding: 24px; max-width: 400px; width: 90%; max-height: 80vh; overflow-y: auto; margin: auto; }
-        .modal h3 { color: #1976d2; margin-bottom: 16px; font-size: 1.2em; }
-        .modal-item { background: #f5f5f5; padding: 16px; border-radius: 8px; margin-bottom: 12px; text-align: center; }
-        .modal-item .label { font-size: 0.85em; color: #666; margin-bottom: 4px; }
-        .modal-item .value { font-size: 1.1em; font-weight: bold; color: #333; word-break: break-word; }
-        .modal-item .code { font-family: monospace; color: #0d47a1; font-size: 1.3em; }
-        .modal-item .large { font-size: 2em; font-weight: bold; color: #1976d2; }
-        .modal-close { background: #666; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 1em; width: 100%; }
-        .modal-close:hover { background: #555; }
-        #scanner { width: 100%; max-width: 300px; margin: 0 auto; }
-        #scanner video { border-radius: 8px; }
-        .scan-result { background: #e3f2fd; padding: 12px; border-radius: 8px; margin-top: 12px; text-align: center; font-weight: bold; }
-        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #2e7d32; color: white; padding: 12px 24px; border-radius: 8px; font-size: 0.9em; opacity: 0; transition: opacity 0.3s; z-index: 2000; }
-        .toast.show { opacity: 1; }
-        .section-title { background: #546e7a; color: white; font-weight: 600; padding: 10px 16px; }
-        .section-title.zero-cat { background: #9e9e9e; }
-        .section-title.edit-mode { background: #f57c00; }
-        .info-text { background: #fff3e0; border-left: 4px solid #f57c00; padding: 12px; border-radius: 4px; margin-bottom: 16px; font-size: 0.85em; color: #e65100; }
+        .inventory-table tr:hover { background: #f5f5f5; }
+        
+        .verified { color: #388e3c; font-size: 1.2em; }
+        .pending { color: #ffa000; font-size: 1.2em; }
+        
+        .last-updated { text-align: center; padding: 12px; color: #666; font-size: 0.85em; background: #fafafa; }
+        
+        /* POS Touch-friendly checkbox */
+        .inventory-table input[type="checkbox"] { width: 28px; height: 28px; cursor: pointer; }
+        
+        /* Responsive */
+        @media (min-width: 769px) {
+            .container { max-width: 1400px; }
+            .stat-item { flex: 1 1 20%; }
+            .stat-item:nth-child(5) { border-right: none; }
+            .inventory-table { font-size: 1.05em; }
+            .inventory-table th, .inventory-table td { padding: 16px 14px; }
+        }
+        
+        @media (max-width: 768px) and (min-width: 481px) {
+            .stat-item { flex: 1 1 33%; }
+            .stat-item:nth-child(3) { border-right: none; }
+        }
+        
+        @media (max-width: 480px) {
+            h1 { padding: 12px; font-size: 1.2em; }
+            .stat-item { flex: 1 1 50%; padding: 12px; }
+            .stat-item .number { font-size: 1.6em; }
+            .search-bar { flex-direction: column; }
+            .btn { justify-content: center; }
+            .inventory-table { font-size: 0.9em; }
+            .inventory-table th, .inventory-table td { padding: 10px 8px; }
+            .inventory-table .name { max-width: 120px; }
+        }
+        
+        @media (max-width: 480px) and (orientation: landscape) {
+            .stat-item { flex: 1 1 25%; padding: 8px; }
+            .stat-item .number { font-size: 1.4em; }
+            .inventory-table th, .inventory-table td { padding: 8px 6px; font-size: 0.85em; }
+        }
+        
+        /* Scanner Modal */
+        #scanner-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; padding: 20px; }
+        #scanner-modal.active { display: flex; align-items: center; justify-content: center; }
+        .scanner-content { background: white; border-radius: 12px; padding: 20px; width: 100%; max-width: 400px; }
+        .scanner-content h3 { margin-bottom: 16px; text-align: center; }
+        #qr-reader { width: 100%; }
+        .close-scanner { margin-top: 12px; width: 100%; background: #666; color: white; padding: 12px; border: none; border-radius: 8px; font-size: 1em; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📦 庫存管理系統</h1>
-        <div class="card">
-            <h2>📌 資料更新</h2>
-            <div class="info-box">在 LINE 傳照片並說「我要盤點」，AI 會自動更新庫存</div>
-            <div class="info-text">⚠️ 數量以 LINE 拍照上傳為準，網頁僅供查詢和確認</div>
-        </div>
-        <div class="stats">
-            <div class="stat-item"><div class="number" id="totalItems">0</div><div class="label">本次品項</div></div>
-            <div class="stat-item"><div class="number" id="totalQty">0</div><div class="label">實際總數</div></div>
-            <div class="stat-item"><div class="number" id="totalOnline">0</div><div class="label">網購總數</div></div>
-            <div class="stat-item stock"><div class="number" id="inStock">0</div><div class="label">有庫存</div></div>
-            <div class="stat-item zero"><div class="number" id="zeroStock">0</div><div class="label">零庫存</div></div>
-        </div>
-        <div class="action-bar">
-            <div class="search-box"><input type="text" class="search-input" id="searchInput" placeholder="🔍 搜尋品號或品名..." oninput="filterInventory()"></div>
-            <button class="scan-btn" onclick="openScanner()">📷 查詢</button>
-            <button class="edit-btn" id="editBtn" onclick="toggleEditMode()">✏️ 確認</button>
-            <button class="done-btn" id="doneBtn" onclick="toggleEditMode()">✓ 完成</button>
-        </div>
-        <div id="uploadTime" style="text-align:center;color:#888;font-size:0.85em;margin-bottom:12px;"></div>
-        <div id="inventoryContent"></div>
-        <div class="last-updated" id="lastUpdated"></div>
+    <h1>📦 庫存管理系統</h1>
+    
+    <div class="stats-bar">
+        <div class="stat-item"><div class="number" id="totalItems">0</div><div class="label">本次品項</div></div>
+        <div class="stat-item stock"><div class="number" id="inStock">0</div><div class="label">有庫存</div></div>
+        <div class="stat-item zero"><div class="number" id="zeroStock">0</div><div class="label">零庫存</div></div>
+        <div class="stat-item"><div class="number" id="totalQty">0</div><div class="label">實際總數</div></div>
+        <div class="stat-item"><div class="number" id="totalOnline">0</div><div class="label">網購總數</div></div>
     </div>
-    <div class="modal" id="scanModal">
-        <div class="modal-content">
-            <h3>📦 商品資料（資料庫查詢）</h3>
-            <div class="modal-item"><div class="label">品號</div><div class="value code" id="scanCode">-</div></div>
-            <div class="modal-item"><div class="label">品名</div><div class="value" id="scanName">-</div></div>
-            <div class="modal-item"><div class="label">實際庫存</div><div class="value large" id="scanQty">-</div></div>
-            <div class="modal-item"><div class="label">網購庫存</div><div class="value" id="scanOnline">-</div></div>
-            <div class="modal-item"><div class="label">狀態</div><div class="value" id="scanStatus">-</div></div>
-            <div class="modal-item"><div class="label">最後上傳</div><div class="value" id="scanUploaded">-</div></div>
-            <button class="modal-close" onclick="closeScanModal()">關閉</button>
+    
+    <div class="card">
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="🔍 搜尋品號或品名...">
+            <button class="btn btn-scan" onclick="openScanner()">📷 掃描</button>
+            <button class="btn btn-edit" id="editBtn" onclick="toggleEditMode()">✏️ 確認</button>
+            <button class="btn btn-done" id="doneBtn" onclick="toggleEditMode()">✅ 完成</button>
+        </div>
+        <div id="inventoryList"></div>
+    </div>
+    
+    <div class="last-updated" id="lastUpdated">載入中...</div>
+    
+    <div id="scanner-modal">
+        <div class="scanner-content">
+            <h3>📷 掃描 QR Code / Barcode</h3>
+            <div id="qr-reader"></div>
+            <button class="close-scanner" onclick="closeScanner()">關閉</button>
         </div>
     </div>
-    <div class="modal" id="scannerModal">
-        <div class="modal-content">
-            <h3>📷 掃描查詢</h3>
-            <div id="scanner"></div>
-            <div class="scan-result" id="scanResult" style="display:none;"></div>
-            <div style="text-align:center;margin-top:16px;"><button class="modal-close" onclick="closeScanner()">關閉</button></div>
-        </div>
-    </div>
-    <div id="toast" class="toast"></div>
+
     <script>
-        let inventoryData = null;
-        let isEditMode = false;
-        let html5QrcodeScanner = null;
-        let lastScannedCode = null;
-        function sortCodes(a, b) {
-            const codeA = String(a.code || ''), codeB = String(b.code || '');
-            const aFirstIsDigit = /^\d$/.test(codeA[0]), bFirstIsDigit = /^\d$/.test(codeB[0]);
-            if (aFirstIsDigit && !bFirstIsDigit) return -1;
-            if (!aFirstIsDigit && bFirstIsDigit) return 1;
-            const len = Math.max(codeA.length, codeB.length);
-            for (let i = 0; i < len; i++) {
-                const charA = codeA[i], charB = codeB[i];
-                if (charA === undefined && charB === undefined) return 0;
-                if (charA === undefined) return -1;
-                if (charB === undefined) return 1;
-                const aIsDigit = /^\d$/.test(charA), bIsDigit = /^\d$/.test(charB);
-                if (aIsDigit && bIsDigit) { if (charA !== charB) return parseInt(charA) - parseInt(charB); }
-                else if (aIsDigit && !bIsDigit) return -1;
-                else if (!aIsDigit && bIsDigit) return 1;
-                else { const cmp = charA.localeCompare(charB); if (cmp !== 0) return cmp; }
+    let inventoryData = { items: [], last_updated: null };
+    let isEditMode = false;
+    let html5QrcodeScanner = null;
+    let lastUploaded = null;
+
+    async function loadInventory() {
+        try {
+            const response = await fetch('inventory.json');
+            const data = await response.json();
+            inventoryData = data;
+            lastUploaded = data.last_updated;
+            renderInventory();
+        } catch (error) {
+            console.error('Error loading inventory:', error);
+            document.getElementById('inventoryList').innerHTML = '<p style="padding:20px;text-align:center;color:#d32f2f;">載入失敗，請檢查網路連線</p>';
+        }
+    }
+
+    function renderInventory(filter = '') {
+        const list = document.getElementById('inventoryList');
+        const isEdit = isEditMode;
+        filter = filter.toLowerCase();
+        
+        let htmlHasStock = '', htmlZeroStock = '';
+        let totalItems = 0, totalQty = 0, totalOnline = 0, inStock = 0, zeroStock = 0;
+        
+        inventoryData.items.forEach(item => {
+            const code = (item.code || '').toLowerCase();
+            const name = (item.name || '').toLowerCase();
+            if (filter && !code.includes(filter) && !name.includes(filter)) return;
+            
+            const qty = item.actual_qty || 0;
+            const onlineQty = item.online_qty || 0;
+            const isVerified = item.verified || false;
+            const note = item.note || '';
+            const isBothZero = qty === 0 && onlineQty === 0;
+            const rowClass = isBothZero ? 'zero-row' : '';
+            const qtyClass = qty === 0 ? 'qty zero' : 'qty has-stock';
+            
+            totalItems++;
+            totalQty += qty;
+            totalOnline += onlineQty;
+            
+            if (isBothZero) { 
+                zeroStock++; 
+                const checkbox = isEdit ? `<input type="checkbox" ${isVerified ? 'checked' : ''} onchange="toggleVerified('${item.code}', this.checked)">` : (isVerified ? '✅' : '⏳');
+                htmlZeroStock += `<tr class="${rowClass}"><td class="code">${item.code || '-'}</td><td class="name">${item.name || '-'}</td><td class="${qtyClass}">${qty}</td><td class="${qtyClass}">${onlineQty}</td><td class="verified">${checkbox}</td><td>${note || '-'}</td></tr>`;
+            } else { 
+                if (qty > 0 || onlineQty > 0) inStock++;
+                const checkbox = isEdit ? `<input type="checkbox" ${isVerified ? 'checked' : ''} onchange="toggleVerified('${item.code}', this.checked)">` : (isVerified ? '✅' : '⏳');
+                htmlHasStock += `<tr class="${rowClass}"><td class="code">${item.code || '-'}</td><td class="name">${item.name || '-'}</td><td class="${qtyClass}">${qty}</td><td class="${qtyClass}">${onlineQty}</td><td class="verified">${checkbox}</td><td>${note || '-'}</td></tr>`;
             }
-            return 0;
+        });
+        
+        let html = '';
+        if (htmlHasStock) html += `<div class="card-title">📦 本次上傳品項${filter ? '（搜尋結果）' : ''}</div><table class="inventory-table"><thead><tr><th>品號</th><th>品名</th><th>實際</th><th>網購</th><th>✓</th><th>備註</th></tr></thead><tbody>${htmlHasStock}</tbody></table>`;
+        if (htmlZeroStock) html += `<div class="card-title zero-cat">📭 零庫存品項</div><table class="inventory-table"><thead><tr><th>品號</th><th>品名</th><th>實際</th><th>網購</th><th>✓</th><th>備註</th></tr></thead><tbody>${htmlZeroStock}</tbody></table>`;
+        
+        list.innerHTML = html || '<p style="padding:20px;text-align:center;">找不到品項</p>';
+        
+        document.getElementById('totalItems').textContent = totalItems;
+        document.getElementById('inStock').textContent = inStock;
+        document.getElementById('zeroStock').textContent = zeroStock;
+        document.getElementById('totalQty').textContent = totalQty;
+        document.getElementById('totalOnline').textContent = totalOnline;
+        document.getElementById('lastUpdated').textContent = '📁 資料更新：' + (inventoryData.last_updated || '未知');
+    }
+
+    function toggleEditMode() {
+        isEditMode = !isEditMode;
+        document.getElementById('editBtn').style.display = isEditMode ? 'none' : 'inline-flex';
+        document.getElementById('doneBtn').style.display = isEditMode ? 'inline-flex' : 'none';
+        document.getElementById('searchInput').disabled = isEditMode;
+        if (isEditMode) document.getElementById('searchInput').value = '';
+        renderInventory();
+    }
+
+    function toggleVerified(code, checked) {
+        const item = inventoryData.items.find(i => i.code === code);
+        if (item) {
+            item.verified = checked;
+            saveInventory();
         }
-        async function loadInventory() {
-            try {
-                const response = await fetch('inventory.json');
-                inventoryData = await response.json();
-                if (!inventoryData.categories || inventoryData.categories.length === 0) {
-                    document.getElementById('inventoryContent').innerHTML = '<div class="card" style="text-align:center;padding:40px;color:#666;">目前沒有庫存資料</div>';
-                    return;
-                }
-                renderInventory();
-            } catch (err) {
-                document.getElementById('inventoryContent').innerHTML = '<div class="card" style="text-align:center;padding:40px;color:#d32f2f;">無法載入庫存資料</div>';
-            }
-        }
-        function getRecentUploadTime() {
-            let latest = null;
-            inventoryData.categories.forEach(cat => cat.items.forEach(item => { if (item.lastUploaded) { const t = new Date(item.lastUploaded).getTime(); if (!latest || t > latest) latest = t; } }));
-            return latest;
-        }
-        function renderInventory(filterText = '') {
-            let totalItems = 0, totalQty = 0, totalOnline = 0, inStock = 0, zeroStock = 0;
-            let allItems = [];
-            inventoryData.categories.forEach(cat => cat.items.forEach(item => allItems.push(item)));
-            const latestTime = getRecentUploadTime();
-            const recentThreshold = latestTime ? latestTime - 24 * 60 * 60 * 1000 : 0;
-            let recentItems = allItems.filter(item => { if (!item.lastUploaded) return true; return new Date(item.lastUploaded).getTime() >= recentThreshold; });
-            if (recentItems.length === 0) recentItems = allItems;
-            recentItems.sort(sortCodes);
-            let htmlHasStock = '', htmlZeroStock = '';
-            const filter = filterText.toLowerCase();
-            recentItems.forEach((item) => {
-                const qty = item.quantity ?? 0, onlineQty = item.onlineQuantity ?? 0;
-                const isBothZero = qty === 0 && onlineQty === 0;
-                const isVerified = item.verified || isBothZero;
-                const note = item.note || '';
-                if (filter) { const codeMatch = (item.code || '').toLowerCase().includes(filter); const nameMatch = (item.name || '').toLowerCase().includes(filter); if (!codeMatch && !nameMatch) return; }
-                const qtyClass = isBothZero ? 'qty zero' : 'qty has-stock';
-                const rowClass = isVerified ? 'verified-row' : '';
-                const noteInput = isEditMode ? '<input type="text" value="' + note + '" placeholder="備註" onchange="updateNote(\'' + item.code + '\', this.value)">' : (note ? note : '-');
-                if (isBothZero) { zeroStock++; htmlZeroStock += '<tr class="' + rowClass + '"><td class="code">' + (item.code || '-') + '</td><td class="name">' + (item.name || '-') + '</td><td class="' + qtyClass + '">' + qty + '</td><td class="' + qtyClass + '">' + onlineQty + '</td><td class="verified">✅</td><td>' + (note || '-') + '</td></tr>'; }
-                else { if (qty > 0 || onlineQty > 0) inStock++; totalItems++; totalQty += qty; totalOnline += onlineQty; const checkbox = isEditMode ? '<input type="checkbox" ' + (isVerified ? 'checked' : '') + ' onchange="toggleVerified(\'' + item.code + '\', this.checked)">' : (isVerified ? '✅' : '⏳'); htmlHasStock += '<tr class="' + rowClass + '"><td class="code">' + (item.code || '-') + '</td><td class="name">' + (item.name || '-') + '</td><td class="' + qtyClass + '">' + qty + '</td><td class="' + qtyClass + '">' + onlineQty + '</td><td class="verified">' + checkbox + '</td><td>' + noteInput + '</td></tr>'; }
+    }
+
+    async function saveInventory() {
+        try {
+            const response = await fetch('inventory.json', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(inventoryData)
             });
-            let html = '';
-            if (htmlHasStock) html += '<div class="section-title' + (isEditMode ? ' edit-mode' : '') + '">' + (isEditMode ? '✏️ 確認模式' : '📦 本次上傳品項') + (filter ? '（搜尋結果）' : '') + '</div><table class="inventory-table"><thead><tr><th>品號</th><th style="width:750px;">品名</th><th>實際</th><th>網購</th><th>✓</th><th style="width:auto;">備註</th></tr></thead><tbody>' + htmlHasStock + '</tbody></table>';
-            if (htmlZeroStock) html += '<div class="section-title zero-cat">📭 零庫存品項</div><table class="inventory-table"><thead><tr><th>品號</th><th style="width:750px;">品名</th><th>實際</th><th>網購</th><th>✓</th><th style="width:auto;">備註</th></tr></thead><tbody>' + htmlZeroStock + '</tbody></table>';
-            if (!htmlHasStock && !htmlZeroStock) html = '<div class="card" style="text-align:center;padding:40px;color:#666;">找不到符合的商品</div>';
-            if (latestTime) document.getElementById('uploadTime').textContent = '📅 最近上傳：' + new Date(latestTime).toLocaleString('zh-TW');
-            document.getElementById('totalItems').textContent = inStock + zeroStock; document.getElementById('totalQty').textContent = totalQty; document.getElementById('totalOnline').textContent = totalOnline; document.getElementById('inStock').textContent = inStock; document.getElementById('zeroStock').textContent = zeroStock; document.getElementById('lastUpdated').textContent = '資料庫更新：' + (inventoryData.last_updated || '未知');
-            document.getElementById('inventoryContent').innerHTML = html;
-            document.getElementById('editBtn').style.display = isEditMode ? 'none' : 'inline-block';
-            document.getElementById('doneBtn').style.display = isEditMode ? 'inline-block' : 'none';
+            if (!response.ok) throw new Error('Save failed');
+        } catch (error) {
+            console.error('Error saving:', error);
+            alert('儲存失敗');
         }
-        function filterInventory() { renderInventory(document.getElementById('searchInput').value); }
-        function toggleEditMode() { isEditMode = !isEditMode; renderInventory(document.getElementById('searchInput').value); showToast(isEditMode ? '✏️ 進入確認模式' : '✓ 已儲存確認狀態'); }
-        function toggleVerified(code, checked) { inventoryData.categories.forEach(cat => cat.items.forEach(item => { if (item.code === code) { item.verified = checked; showToast(checked ? '✅ 已確認：' + item.name : '⏳ 已取消：' + item.name); } })); }
-        function updateNote(code, value) { inventoryData.categories.forEach(cat => cat.items.forEach(item => { if (item.code === code) { item.note = value; showToast('📝 已更新備註'); } })); }
-        function showToast(msg) { const toast = document.getElementById('toast'); toast.textContent = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2000); }
-        function openScanner() { document.getElementById('scannerModal').classList.add('show'); document.getElementById('scanResult').style.display = 'none'; lastScannedCode = null; if (html5QrcodeScanner) html5QrcodeScanner.clear(); html5QrcodeScanner = new Html5Qrcode("scanner"); html5QrcodeScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 150 }, aspectRatio: 1.5 }, onScanSuccess, onScanFailure).catch(err => { document.getElementById('scanner').innerHTML = '<div style="color:red;padding:20px;">相機權限被拒絕或無法使用<br>' + err + '</div>'; }); }
-        function closeScanner() { document.getElementById('scannerModal').classList.remove('show'); if (html5QrcodeScanner) html5QrcodeScanner.stop().then(() => html5QrcodeScanner.clear()).catch(err => {}); }
-        function onScanSuccess(decodedText) { if (decodedText === lastScannedCode) return; lastScannedCode = decodedText; document.getElementById('scanResult').textContent = '✅ 掃描成功：' + decodedText; document.getElementById('scanResult').style.display = 'block'; const item = findItemByCode(decodedText); if (item) { closeScanner(); showScanModal(item); } else { showToast('找不到品號：' + decodedText); } }
-        function onScanFailure(error) {}
-        function findItemByCode(code) { for (const cat of inventoryData.categories) for (const item of cat.items) if (item.code === code) return item; return null; }
-        function showScanModal(item) { document.getElementById('scanCode').textContent = item.code || '-'; document.getElementById('scanName').textContent = item.name || '-'; document.getElementById('scanQty').textContent = item.quantity ?? 0; document.getElementById('scanOnline').textContent = item.onlineQuantity ?? 0; const isVerified = item.verified || ((item.quantity ?? 0) === 0 && (item.onlineQuantity ?? 0) === 0); document.getElementById('scanStatus').innerHTML = isVerified ? '<span style="color:#2e7d32;">✅ 已確認</span>' : '<span style="color:#f57c00;">⏳ 待確認</span>'; document.getElementById('scanUploaded').textContent = item.lastUploaded ? new Date(item.lastUploaded).toLocaleString('zh-TW') : '無記錄'; document.getElementById('scanModal').classList.add('show'); }
-        function closeScanModal() { document.getElementById('scanModal').classList.remove('show'); }
-        loadInventory();
+    }
+
+    function openScanner() {
+        document.getElementById('scanner-modal').classList.add('active');
+        if (!html5QrcodeScanner) {
+            html5QrcodeScanner = new Html5Qrcode("qr-reader");
+        }
+        html5QrcodeScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 },
+            qrCodeMessage => {
+                const code = qrCodeMessage.trim();
+                document.getElementById('searchInput').value = code;
+                closeScanner();
+                renderInventory(code);
+            },
+            errorMessage => { }
+        ).catch(err => { console.error(err); alert('相機無法開啟'); });
+    }
+
+    function closeScanner() {
+        document.getElementById('scanner-modal').classList.remove('active');
+        if (html5QrcodeScanner) {
+            html5QrcodeScanner.stop().catch(() => {});
+        }
+    }
+
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        if (!isEditMode) renderInventory(e.target.value);
+    });
+
+    loadInventory();
     </script>
 </body>
 </html>
