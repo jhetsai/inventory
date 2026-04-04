@@ -150,13 +150,13 @@
         let htmlHasStock = '', htmlZeroStock = '';
         let totalItems = 0, totalQty = 0, totalOnline = 0, inStock = 0, zeroStock = 0;
         
-        inventoryData.items.forEach(item => {
+        inventoryData.categories.forEach(cat => { cat.items.forEach(item => {
             const code = (item.code || '').toLowerCase();
             const name = (item.name || '').toLowerCase();
             if (filter && !code.includes(filter) && !name.includes(filter)) return;
             
-            const qty = item.actual_qty || 0;
-            const onlineQty = item.online_qty || 0;
+            const qty = item.quantity || 0;
+            const onlineQty = item.onlineQuantity || 0;
             const isVerified = item.verified || false;
             const note = item.note || '';
             const isBothZero = qty === 0 && onlineQty === 0;
@@ -176,7 +176,7 @@
                 const checkbox = isEdit ? `<input type="checkbox" ${isVerified ? 'checked' : ''} onchange="toggleVerified('${item.code}', this.checked)">` : (isVerified ? '✅' : '⏳');
                 htmlHasStock += `<tr class="${rowClass}"><td class="code">${item.code || '-'}</td><td class="name">${item.name || '-'}</td><td class="${qtyClass}">${qty}</td><td class="${qtyClass}">${onlineQty}</td><td class="verified">${checkbox}</td><td>${note || '-'}</td></tr>`;
             }
-        });
+        }}});
         
         let html = '';
         if (htmlHasStock) html += `<div class="card-title">📦 本次上傳品項${filter ? '（搜尋結果）' : ''}</div><table class="inventory-table"><thead><tr><th>品號</th><th>品名</th><th>實際</th><th>網購</th><th>✓</th><th>備註</th></tr></thead><tbody>${htmlHasStock}</tbody></table>`;
@@ -215,7 +215,7 @@
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(inventoryData)
-            });
+            }}});
             if (!response.ok) throw new Error('Save failed');
         } catch (error) {
             console.error('Error saving:', error);
@@ -236,19 +236,19 @@
                 renderInventory(code);
             },
             errorMessage => { }
-        ).catch(err => { console.error(err); alert('相機無法開啟'); });
+        ).catch(err => { console.error(err); alert('相機無法開啟'); }}});
     }
 
     function closeScanner() {
         document.getElementById('scanner-modal').classList.remove('active');
         if (html5QrcodeScanner) {
-            html5QrcodeScanner.stop().catch(() => {});
+            html5QrcodeScanner.stop().catch(() => {}}});
         }
     }
 
     document.getElementById('searchInput').addEventListener('input', (e) => {
         if (!isEditMode) renderInventory(e.target.value);
-    });
+    }}});
 
     loadInventory();
     </script>
