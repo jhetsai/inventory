@@ -1,67 +1,51 @@
-# 門市智能管理系統 - 文件中心
+# 📦 庫存管理系統
 
-_維護：蝦助 🦐_
+用於管理門市庫存的系統，支援 LINE Bot 拍照上傳辨識。
 
----
+## 📁 資料格式
 
-## 📁 專案結構
-
-```
-├── docs/                    # 操作手冊
-│   ├── INVENTORY_MANUAL.md           # 庫存系統 - 詳細技術手冊
-│   ├── INVENTORY_QUICK_GUIDE.md      # 庫存系統 - 簡單使用說明（純文字）
-│   └── INVENTORY_QUICK_GUIDE.html    # 庫存系統 - 簡單使用說明（美觀版）
-│
-├── index.html               # 庫存系統主頁面
-├── inventory.json           # 庫存資料庫
-├── electricity_final.html   # 台電電費分析系統
-│
-└── README.md               # 本文件
-```
-
----
-
-## 🚀 快速連結
-
-| 系統 | 連結 |
-|------|------|
-| 📦 庫存系統 | https://jhetsai.github.io/inventory/ |
-| ⚡ 台電分析 | https://jhetsai.github.io/openclaw/electricity_final.html |
-
----
-
-## 📋 操作手冊
-
-### 庫存系統
-
-| 手冊 | 適合對象 | 說明 |
-|------|---------|------|
-| [INVENTORY_QUICK_GUIDE](docs/INVENTORY_QUICK_GUIDE.md) | 門市人員 | 3步驟快速上手 |
-| [INVENTORY_MANUAL](docs/INVENTORY_MANUAL.md) | 管理人員 | 完整功能說明 |
-
-### 台電系統
-
-請參考系統內建說明（按「？」按鈕）
-
----
-
-## 🔧 技術架構
-
-```
-┌─────────────┐     ┌──────────────┐     ┌──────────────┐
-│   LINE     │────▶│   AI Bot    │────▶│   GitHub     │
-│   App      │     │  (自動分析)  │     │  (資料儲存)  │
-└─────────────┘     └──────────────┘     └──────────────┘
-                                               │
-                                               ▼
-                                      ┌──────────────┐
-                                      │   網頁顯示    │
-                                      │ (GitHub Pages)│
-                                      └──────────────┘
+```json
+{
+  "last_updated": "更新時間",
+  "categories": [{
+    "name": "分類名稱",
+    "items": [
+      {
+        "code": "品號",
+        "name": "品名",
+        "quantity": "實際庫存",
+        "onlineQuantity": "網購庫存",
+        "verified": true/false,
+        "note": "備註"
+      }
+    ]
+  }]
+}
 ```
 
----
+## 🔗 線上使用
 
-## 📞 聯繫
+**https://jhetsai.github.io/inventory/**
 
-有問題找蔡哲維 🦐
+## 📊 功能特色
+
+- LINE Bot 拍照上傳 → AI 辨識 → 自動更新庫存
+- 掃描 QR Code / Barcode 查詢
+- 庫存確認模式（勾選已完成盤點的品項）
+- Git Hook 自動同步到 GitHub
+- 響應式設計（支援 iPhone、Android、平板、電腦）
+
+## 🛠️ 技術架構
+
+- HTML + JavaScript
+- LINE Bot（聊天介面）
+- GitHub（資料儲存 + 自動同步）
+- GitHub Pages（網頁託管）
+- 響應式 POS 風格介面
+
+## 📝 更新方式
+
+1. 透過 LINE Bot 拍照上傳發票或庫存照片
+2. AI 自動辨識品項並更新 inventory.json
+3. Git Hook 自動推送更新到 GitHub
+4. 網頁自動載入最新資料
