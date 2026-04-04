@@ -9,7 +9,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft JhengHei", sans-serif; background: #f0f2f5; min-height: 100vh; padding: 12px; }
         @media (min-width: 769px) { body { padding: 20px; } .container { max-width: 1200px; margin: 0 auto; } h1 { font-size: 1.8em; margin-bottom: 30px; } .card { padding: 24px; margin-bottom: 20px; } .stats { gap: 16px; } .stat-item { padding: 20px 24px; } .stat-item .number { font-size: 2em; } .inventory-table { font-size: 0.9em; } .inventory-table th, .inventory-table td { padding: 12px 10px; } }
-        @media (max-width: 480px) { body { padding: 10px; } .container { max-width: 100%; } h1 { font-size: 1.3em; margin-bottom: 16px; } .card { padding: 16px; margin-bottom: 12px; border-radius: 6px; } .stats { gap: 8px; margin-bottom: 12px; } .stat-item { flex: 1 1 calc(50% - 4px); padding: 12px 8px; } .stat-item .number { font-size: 1.5em; } .stat-item .label { font-size: 0.7em; } .inventory-table { font-size: 0.75em; } .inventory-table th, .inventory-table td { padding: 6px 4px; } .inventory-table .code { font-size: 0.85em; font-weight: 700; color: #0d47a1; } .inventory-table .name { max-width: 80px; font-size: 0.7em; } }
+        @media (max-width: 480px) { body { padding: 10px; } .container { max-width: 100%; } h1 { font-size: 1.3em; margin-bottom: 16px; } .card { padding: 16px; margin-bottom: 12px; border-radius: 6px; } .stats { gap: 8px; margin-bottom: 12px; } .stat-item { flex: 1 1 calc(50% - 4px); padding: 12px 8px; } .stat-item .number { font-size: 1.5em; } .stat-item .label { font-size: 0.7em; } .inventory-table { font-size: 0.75em; } .inventory-table th, .inventory-table td { padding: 6px 4px; } }
         .card { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; }
         .card h2 { color: #333; margin-bottom: 16px; font-size: 1.1em; font-weight: 600; border-bottom: 2px solid #1976d2; padding-bottom: 8px; }
         .info-box { background: #f5f5f5; border-radius: 4px; padding: 16px; margin-bottom: 16px; font-size: 0.9em; color: #555; border-left: 4px solid #1976d2; }
@@ -83,9 +83,7 @@
             <div class="stat-item zero"><div class="number" id="zeroStock">0</div><div class="label">零庫存</div></div>
         </div>
         <div class="action-bar">
-            <div class="search-box">
-                <input type="text" class="search-input" id="searchInput" placeholder="🔍 搜尋品號或品名..." oninput="filterInventory()">
-            </div>
+            <div class="search-box"><input type="text" class="search-input" id="searchInput" placeholder="🔍 搜尋品號或品名..." oninput="filterInventory()"></div>
             <button class="scan-btn" onclick="openScanner()">📷 查詢</button>
             <button class="edit-btn" id="editBtn" onclick="toggleEditMode()">✏️ 確認</button>
             <button class="done-btn" id="doneBtn" onclick="toggleEditMode()">✓ 完成</button>
@@ -188,9 +186,7 @@
                 }
                 const qtyClass = isBothZero ? 'qty zero' : 'qty has-stock';
                 const rowClass = isVerified ? 'verified-row' : '';
-                const noteInput = isEditMode 
-                    ? '<input type="text" value="' + note + '" placeholder="備註" onchange="updateNote(\'' + item.code + '\', this.value)">' 
-                    : (note ? note : '-');
+                const noteInput = isEditMode ? '<input type="text" value="' + note + '" placeholder="備註" onchange="updateNote(\'' + item.code + '\', this.value)">' : (note ? note : '-');
                 if (isBothZero) {
                     zeroStock++;
                     htmlZeroStock += '<tr class="' + rowClass + '"><td class="code">' + (item.code || '-') + '</td><td class="name">' + (item.name || '-') + '</td><td class="' + qtyClass + '">' + qty + '</td><td class="' + qtyClass + '">' + onlineQty + '</td><td class="verified">✅</td><td>' + (note || '-') + '</td></tr>';
@@ -218,46 +214,15 @@
         }
         function filterInventory() { renderInventory(document.getElementById('searchInput').value); }
         function toggleEditMode() { isEditMode = !isEditMode; renderInventory(document.getElementById('searchInput').value); showToast(isEditMode ? '✏️ 進入確認模式' : '✓ 已儲存確認狀態'); }
-        function toggleVerified(code, checked) {
-            inventoryData.categories.forEach(cat => cat.items.forEach(item => {
-                if (item.code === code) { item.verified = checked; showToast(checked ? '✅ 已確認：' + item.name : '⏳ 已取消：' + item.name); }
-            }));
-        }
-        function updateNote(code, value) {
-            inventoryData.categories.forEach(cat => cat.items.forEach(item => {
-                if (item.code === code) { item.note = value; showToast('📝 已更新備註'); }
-            }));
-        }
+        function toggleVerified(code, checked) { inventoryData.categories.forEach(cat => cat.items.forEach(item => { if (item.code === code) { item.verified = checked; showToast(checked ? '✅ 已確認：' + item.name : '⏳ 已取消：' + item.name); } })); }
+        function updateNote(code, value) { inventoryData.categories.forEach(cat => cat.items.forEach(item => { if (item.code === code) { item.note = value; showToast('📝 已更新備註'); } })); }
         function showToast(msg) { const toast = document.getElementById('toast'); toast.textContent = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2000); }
-        function openScanner() {
-            document.getElementById('scannerModal').classList.add('show');
-            document.getElementById('scanResult').style.display = 'none';
-            lastScannedCode = null;
-            if (html5QrcodeScanner) html5QrcodeScanner.clear();
-            html5QrcodeScanner = new Html5Qrcode("scanner");
-            html5QrcodeScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 150 }, aspectRatio: 1.5 }, onScanSuccess, onScanFailure).catch(err => { document.getElementById('scanner').innerHTML = '<div style="color:red;padding:20px;">相機權限被拒絕或無法使用<br>' + err + '</div>'; });
-        }
+        function openScanner() { document.getElementById('scannerModal').classList.add('show'); document.getElementById('scanResult').style.display = 'none'; lastScannedCode = null; if (html5QrcodeScanner) html5QrcodeScanner.clear(); html5QrcodeScanner = new Html5Qrcode("scanner"); html5QrcodeScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 150 }, aspectRatio: 1.5 }, onScanSuccess, onScanFailure).catch(err => { document.getElementById('scanner').innerHTML = '<div style="color:red;padding:20px;">相機權限被拒絕或無法使用<br>' + err + '</div>'; }); }
         function closeScanner() { document.getElementById('scannerModal').classList.remove('show'); if (html5QrcodeScanner) html5QrcodeScanner.stop().then(() => html5QrcodeScanner.clear()).catch(err => {}); }
-        function onScanSuccess(decodedText) {
-            if (decodedText === lastScannedCode) return;
-            lastScannedCode = decodedText;
-            document.getElementById('scanResult').textContent = '✅ 掃描成功：' + decodedText;
-            document.getElementById('scanResult').style.display = 'block';
-            const item = findItemByCode(decodedText);
-            if (item) { closeScanner(); showScanModal(item); } else { showToast('找不到品號：' + decodedText); }
-        }
+        function onScanSuccess(decodedText) { if (decodedText === lastScannedCode) return; lastScannedCode = decodedText; document.getElementById('scanResult').textContent = '✅ 掃描成功：' + decodedText; document.getElementById('scanResult').style.display = 'block'; const item = findItemByCode(decodedText); if (item) { closeScanner(); showScanModal(item); } else { showToast('找不到品號：' + decodedText); } }
         function onScanFailure(error) {}
         function findItemByCode(code) { for (const cat of inventoryData.categories) for (const item of cat.items) if (item.code === code) return item; return null; }
-        function showScanModal(item) {
-            document.getElementById('scanCode').textContent = item.code || '-';
-            document.getElementById('scanName').textContent = item.name || '-';
-            document.getElementById('scanQty').textContent = item.quantity ?? 0;
-            document.getElementById('scanOnline').textContent = item.onlineQuantity ?? 0;
-            const isVerified = item.verified || ((item.quantity ?? 0) === 0 && (item.onlineQuantity ?? 0) === 0);
-            document.getElementById('scanStatus').innerHTML = isVerified ? '<span style="color:#2e7d32;">✅ 已確認</span>' : '<span style="color:#f57c00;">⏳ 待確認</span>';
-            document.getElementById('scanUploaded').textContent = item.lastUploaded ? new Date(item.lastUploaded).toLocaleString('zh-TW') : '無記錄';
-            document.getElementById('scanModal').classList.add('show');
-        }
+        function showScanModal(item) { document.getElementById('scanCode').textContent = item.code || '-'; document.getElementById('scanName').textContent = item.name || '-'; document.getElementById('scanQty').textContent = item.quantity ?? 0; document.getElementById('scanOnline').textContent = item.onlineQuantity ?? 0; const isVerified = item.verified || ((item.quantity ?? 0) === 0 && (item.onlineQuantity ?? 0) === 0); document.getElementById('scanStatus').innerHTML = isVerified ? '<span style="color:#2e7d32;">✅ 已確認</span>' : '<span style="color:#f57c00;">⏳ 待確認</span>'; document.getElementById('scanUploaded').textContent = item.lastUploaded ? new Date(item.lastUploaded).toLocaleString('zh-TW') : '無記錄'; document.getElementById('scanModal').classList.add('show'); }
         function closeScanModal() { document.getElementById('scanModal').classList.remove('show'); }
         loadInventory();
     </script>
