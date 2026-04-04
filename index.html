@@ -19,12 +19,12 @@
         .stat-item.stock { background: #2e7d32; }
         .stat-item .number { font-weight: bold; }
         .stat-item .label { opacity: 0.9; }
-        .inventory-table { width: 100%; border-collapse: collapse; background: white; table-layout: fixed; }
+        .inventory-table { width: 100%; border-collapse: collapse; background: white; }
         .inventory-table th { background: #455a64; color: white; text-align: center; font-weight: 600; white-space: nowrap; }
-        .inventory-table td { border-bottom: 1px solid #e0e0e0; text-align: center; vertical-align: middle; }
+        .inventory-table td { border-bottom: 1px solid #e0e0e0; text-align: center; vertical-align: middle; padding: 8px; }
         .inventory-table tbody tr:hover { background: #f5f5f5; }
-        .inventory-table .code { font-weight: 700; color: #0d47a1; font-family: monospace; }
-        .inventory-table .name { text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .inventory-table .code { font-weight: 700; color: #0d47a1; font-family: monospace; white-space: nowrap; }
+        .inventory-table .name { text-align: left; word-break: break-word; white-space: normal; }
         .inventory-table .qty { font-weight: bold; }
         .inventory-table .qty.zero { color: #999; }
         .inventory-table .qty.has-stock { color: #2e7d32; }
@@ -45,13 +45,13 @@
         .edit-btn:hover { background: #e65100; }
         .done-btn { background: #2e7d32; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 1em; white-space: nowrap; display: none; }
         .done-btn:hover { background: #1b5e20; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; overflow-y: auto; }
         .modal.show { display: flex; align-items: center; justify-content: center; }
-        .modal-content { background: white; border-radius: 12px; padding: 24px; max-width: 400px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        .modal-content { background: white; border-radius: 12px; padding: 24px; max-width: 400px; width: 90%; max-height: 80vh; overflow-y: auto; margin: auto; }
         .modal h3 { color: #1976d2; margin-bottom: 16px; font-size: 1.2em; }
         .modal-item { background: #f5f5f5; padding: 16px; border-radius: 8px; margin-bottom: 12px; text-align: center; }
         .modal-item .label { font-size: 0.85em; color: #666; margin-bottom: 4px; }
-        .modal-item .value { font-size: 1.1em; font-weight: bold; color: #333; }
+        .modal-item .value { font-size: 1.1em; font-weight: bold; color: #333; word-break: break-word; }
         .modal-item .code { font-family: monospace; color: #0d47a1; font-size: 1.3em; }
         .modal-item .large { font-size: 2em; font-weight: bold; color: #1976d2; }
         .modal-close { background: #666; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 1em; width: 100%; }
@@ -152,12 +152,7 @@
         }
         function getRecentUploadTime() {
             let latest = null;
-            inventoryData.categories.forEach(cat => cat.items.forEach(item => {
-                if (item.lastUploaded) {
-                    const t = new Date(item.lastUploaded).getTime();
-                    if (!latest || t > latest) latest = t;
-                }
-            }));
+            inventoryData.categories.forEach(cat => cat.items.forEach(item => { if (item.lastUploaded) { const t = new Date(item.lastUploaded).getTime(); if (!latest || t > latest) latest = t; } }));
             return latest;
         }
         function renderInventory(filterText = '') {
@@ -166,10 +161,7 @@
             inventoryData.categories.forEach(cat => cat.items.forEach(item => allItems.push(item)));
             const latestTime = getRecentUploadTime();
             const recentThreshold = latestTime ? latestTime - 24 * 60 * 60 * 1000 : 0;
-            let recentItems = allItems.filter(item => {
-                if (!item.lastUploaded) return true;
-                return new Date(item.lastUploaded).getTime() >= recentThreshold;
-            });
+            let recentItems = allItems.filter(item => { if (!item.lastUploaded) return true; return new Date(item.lastUploaded).getTime() >= recentThreshold; });
             if (recentItems.length === 0) recentItems = allItems;
             recentItems.sort(sortCodes);
             let htmlHasStock = '', htmlZeroStock = '';
@@ -179,35 +171,19 @@
                 const isBothZero = qty === 0 && onlineQty === 0;
                 const isVerified = item.verified || isBothZero;
                 const note = item.note || '';
-                if (filter) {
-                    const codeMatch = (item.code || '').toLowerCase().includes(filter);
-                    const nameMatch = (item.name || '').toLowerCase().includes(filter);
-                    if (!codeMatch && !nameMatch) return;
-                }
+                if (filter) { const codeMatch = (item.code || '').toLowerCase().includes(filter); const nameMatch = (item.name || '').toLowerCase().includes(filter); if (!codeMatch && !nameMatch) return; }
                 const qtyClass = isBothZero ? 'qty zero' : 'qty has-stock';
                 const rowClass = isVerified ? 'verified-row' : '';
                 const noteInput = isEditMode ? '<input type="text" value="' + note + '" placeholder="備註" onchange="updateNote(\'' + item.code + '\', this.value)">' : (note ? note : '-');
-                if (isBothZero) {
-                    zeroStock++;
-                    htmlZeroStock += '<tr class="' + rowClass + '"><td class="code">' + (item.code || '-') + '</td><td class="name">' + (item.name || '-') + '</td><td class="' + qtyClass + '">' + qty + '</td><td class="' + qtyClass + '">' + onlineQty + '</td><td class="verified">✅</td><td>' + (note || '-') + '</td></tr>';
-                } else {
-                    if (qty > 0 || onlineQty > 0) inStock++;
-                    totalItems++; totalQty += qty; totalOnline += onlineQty;
-                    const checkbox = isEditMode ? '<input type="checkbox" ' + (isVerified ? 'checked' : '') + ' onchange="toggleVerified(\'' + item.code + '\', this.checked)">' : (isVerified ? '✅' : '⏳');
-                    htmlHasStock += '<tr class="' + rowClass + '"><td class="code">' + (item.code || '-') + '</td><td class="name">' + (item.name || '-') + '</td><td class="' + qtyClass + '">' + qty + '</td><td class="' + qtyClass + '">' + onlineQty + '</td><td class="verified">' + checkbox + '</td><td>' + noteInput + '</td></tr>';
-                }
+                if (isBothZero) { zeroStock++; htmlZeroStock += '<tr class="' + rowClass + '"><td class="code">' + (item.code || '-') + '</td><td class="name">' + (item.name || '-') + '</td><td class="' + qtyClass + '">' + qty + '</td><td class="' + qtyClass + '">' + onlineQty + '</td><td class="verified">✅</td><td>' + (note || '-') + '</td></tr>'; }
+                else { if (qty > 0 || onlineQty > 0) inStock++; totalItems++; totalQty += qty; totalOnline += onlineQty; const checkbox = isEditMode ? '<input type="checkbox" ' + (isVerified ? 'checked' : '') + ' onchange="toggleVerified(\'' + item.code + '\', this.checked)">' : (isVerified ? '✅' : '⏳'); htmlHasStock += '<tr class="' + rowClass + '"><td class="code">' + (item.code || '-') + '</td><td class="name">' + (item.name || '-') + '</td><td class="' + qtyClass + '">' + qty + '</td><td class="' + qtyClass + '">' + onlineQty + '</td><td class="verified">' + checkbox + '</td><td>' + noteInput + '</td></tr>'; }
             });
             let html = '';
-            if (htmlHasStock) html += '<div class="section-title' + (isEditMode ? ' edit-mode' : '') + '">' + (isEditMode ? '✏️ 確認模式' : '📦 本次上傳品項') + (filter ? '（搜尋結果）' : '') + '</div><table class="inventory-table"><thead><tr><th style="width:90px;">品號</th><th>品名</th><th style="width:50px;">實際</th><th style="width:50px;">網購</th><th style="width:50px;">✓</th><th>備註</th></tr></thead><tbody>' + htmlHasStock + '</tbody></table>';
-            if (htmlZeroStock) html += '<div class="section-title zero-cat">📭 零庫存品項</div><table class="inventory-table"><thead><tr><th style="width:90px;">品號</th><th>品名</th><th style="width:50px;">實際</th><th style="width:50px;">網購</th><th style="width:50px;">✓</th><th>備註</th></tr></thead><tbody>' + htmlZeroStock + '</tbody></table>';
+            if (htmlHasStock) html += '<div class="section-title' + (isEditMode ? ' edit-mode' : '') + '">' + (isEditMode ? '✏️ 確認模式' : '📦 本次上傳品項') + (filter ? '（搜尋結果）' : '') + '</div><table class="inventory-table"><thead><tr><th>品號</th><th>品名</th><th>實際</th><th>網購</th><th>✓</th><th>備註</th></tr></thead><tbody>' + htmlHasStock + '</tbody></table>';
+            if (htmlZeroStock) html += '<div class="section-title zero-cat">📭 零庫存品項</div><table class="inventory-table"><thead><tr><th>品號</th><th>品名</th><th>實際</th><th>網購</th><th>✓</th><th>備註</th></tr></thead><tbody>' + htmlZeroStock + '</tbody></table>';
             if (!htmlHasStock && !htmlZeroStock) html = '<div class="card" style="text-align:center;padding:40px;color:#666;">找不到符合的商品</div>';
             if (latestTime) document.getElementById('uploadTime').textContent = '📅 最近上傳：' + new Date(latestTime).toLocaleString('zh-TW');
-            document.getElementById('totalItems').textContent = totalItems;
-            document.getElementById('totalQty').textContent = totalQty;
-            document.getElementById('totalOnline').textContent = totalOnline;
-            document.getElementById('inStock').textContent = inStock;
-            document.getElementById('zeroStock').textContent = zeroStock;
-            document.getElementById('lastUpdated').textContent = '資料庫更新：' + (inventoryData.last_updated || '未知');
+            document.getElementById('totalItems').textContent = totalItems; document.getElementById('totalQty').textContent = totalQty; document.getElementById('totalOnline').textContent = totalOnline; document.getElementById('inStock').textContent = inStock; document.getElementById('zeroStock').textContent = zeroStock; document.getElementById('lastUpdated').textContent = '資料庫更新：' + (inventoryData.last_updated || '未知');
             document.getElementById('inventoryContent').innerHTML = html;
             document.getElementById('editBtn').style.display = isEditMode ? 'none' : 'inline-block';
             document.getElementById('doneBtn').style.display = isEditMode ? 'inline-block' : 'none';
