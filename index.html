@@ -24,21 +24,21 @@
 @media (max-width: 480px) and (orientation: portrait) { .stats { flex-wrap: wrap; gap: 8px; } .stat-item { flex: 1 1 calc(33% - 6px); padding: 12px 8px; } .stat-item .number { font-size: 1.4em; } .stat-item .label { font-size: 0.7em; } .inventory-table { font-size: 0.75em; } .inventory-table th, .inventory-table td { padding: 6px 4px; } .inventory-table th[style*="width:200px"] { width: 90px !important; } .inventory-table th[style*="width:500px"] { width: 115px !important; } }
 
 /* Landscape orientation - 4 columns */
-/* Landscape orientation - 4 columns, full width */
+/* Mobile Landscape (<=480px, landscape) - iPhone 17 */
 @media (max-width: 480px) and (orientation: landscape) { 
     body { padding: 10px; } 
-    .container { max-width: 100%; margin: 0; padding: 0; } 
-    h1 { font-size: 1.3em; margin-bottom: 12px; padding: 0 10px; }
-    .card { padding: 12px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px; border-radius: 6px; }
-    .section-title { font-size: 0.9em; padding: 8px 10px; margin: 10px 10px 6px 10px; background: #eceff1; border-radius: 4px; }
-    .stats { gap: 8px; margin-bottom: 10px; padding: 0 10px; justify-content: space-between; } 
-    .stat-item { flex: 1 1 auto; padding: 12px 8px; min-width: calc(25% - 6px); } 
-    .stat-item .number { font-size: 1.5em; } 
-    .stat-item .label { font-size: 0.7em; } 
-    .inventory-table { font-size: 0.8em; margin: 0 10px; width: calc(100% - 20px); table-layout: fixed; } 
-    .inventory-table th, .inventory-table td { padding: 6px 4px; } 
-    .inventory-table th[style*="width:200px"] { width: 80px !important; } 
-    .inventory-table th[style*="width:500px"] { width: 120px !important; white-space: normal !important; } 
+    .container { max-width: 100%; } 
+    h1 { font-size: 1.2em; margin-bottom: 10px; }
+    .card { padding: 10px; margin-bottom: 8px; }
+    .stats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .stat-item { flex: 1 1 calc(25% - 6px); padding: 10px 8px; text-align: center; }
+    .stat-item .number { font-size: 1.4em; }
+    .stat-item .label { font-size: 0.65em; }
+    .section-title { font-size: 0.85em; padding: 6px; margin: 8px 0 4px 0; }
+    .inventory-table { font-size: 0.75em; width: 100%; overflow-x: auto; }
+    .inventory-table th, .inventory-table td { padding: 5px 3px; }
+    .inventory-table th[style*="width:200px"] { width: 70px !important; }
+    .inventory-table th[style*="width:500px"] { width: 100px !important; }
 }
 
 /* Tablet (481px - 768px) */
