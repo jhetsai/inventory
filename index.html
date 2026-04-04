@@ -176,7 +176,7 @@
                 const checkbox = isEdit ? `<input type="checkbox" ${isVerified ? 'checked' : ''} onchange="toggleVerified('${item.code}', this.checked)">` : (isVerified ? '✅' : '⏳');
                 htmlHasStock += `<tr class="${rowClass}"><td class="code">${item.code || '-'}</td><td class="name">${item.name || '-'}</td><td class="${qtyClass}">${qty}</td><td class="${qtyClass}">${onlineQty}</td><td class="verified">${checkbox}</td><td>${note || '-'}</td></tr>`;
             }
-        }}});
+        });;
         
         let html = '';
         if (htmlHasStock) html += `<div class="card-title">📦 本次上傳品項${filter ? '（搜尋結果）' : ''}</div><table class="inventory-table"><thead><tr><th>品號</th><th>品名</th><th>實際</th><th>網購</th><th>✓</th><th>備註</th></tr></thead><tbody>${htmlHasStock}</tbody></table>`;
