@@ -219,7 +219,7 @@
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(inventoryData)
-            }}});
+            });
             if (!response.ok) throw new Error('Save failed');
         } catch (error) {
             console.error('Error saving:', error);
@@ -240,19 +240,19 @@
                 renderInventory(code);
             },
             errorMessage => { }
-        ).catch(err => { console.error(err); alert('相機無法開啟'); }}});
+        ).catch(err => { console.error(err); alert('相機無法開啟'); });
     }
 
     function closeScanner() {
         document.getElementById('scanner-modal').classList.remove('active');
         if (html5QrcodeScanner) {
-            html5QrcodeScanner.stop().catch(() => {}}});
+            html5QrcodeScanner.stop().catch(() => {});
         }
     }
 
     document.getElementById('searchInput').addEventListener('input', (e) => {
         if (!isEditMode) renderInventory(e.target.value);
-    }}});
+    });
 
     loadInventory();
     </script>
