@@ -202,7 +202,11 @@
     }
 
     function toggleVerified(code, checked) {
-        const item = inventoryData.items.find(i => i.code === code);
+        let item = null;
+        inventoryData.categories.forEach(cat => {
+            const found = cat.items.find(i => i.code === code);
+            if (found) item = found;
+        });
         if (item) {
             item.verified = checked;
             saveInventory();
