@@ -120,11 +120,36 @@ function checkPassword() {
     var input = document.getElementById('password-input').value;
     if (input === correctPassword) {
         isAuthenticated = true;
+        sessionStorage.setItem('inventoryLoggedIn', 'true');
         document.getElementById('password-overlay').style.display = 'none';
+        showLogoutButton();
     } else {
         document.getElementById('password-error').style.display = 'block';
         document.getElementById('password-input').value = '';
     }
+}
+
+function showLogoutButton() {
+    var logoutBtn = document.createElement('button');
+    logoutBtn.innerHTML = '&#128682; 登出';
+    logoutBtn.className = 'btn logout-btn';
+    logoutBtn.onclick = logout;
+    logoutBtn.style.cssText = 'position:fixed;top:10px;right:10px;z-index:9999;background:#d32f2f;color:white;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;';
+    document.body.appendChild(logoutBtn);
+}
+
+function logout() {
+    sessionStorage.removeItem('inventoryLoggedIn');
+    location.reload();
+}
+
+// Check if already logged in
+if (sessionStorage.getItem('inventoryLoggedIn') === 'true') {
+    isAuthenticated = true;
+    window.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('password-overlay').style.display = 'none';
+        showLogoutButton();
+    });
 }
 </script>
     <h1>📦 庫存管理系統</h1>
