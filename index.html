@@ -131,7 +131,7 @@
 
     async function loadInventory() {
         try {
-            const response = await fetch('inventory.json?t=' + Date.now());
+            const response = await fetch('inventory.json');
             const data = await response.json();
             inventoryData = data;
             lastUploaded = data.last_updated;
