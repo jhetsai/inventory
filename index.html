@@ -21,7 +21,7 @@
 @media (max-width: 480px) { body { padding: 12px; } .container { max-width: 100%; padding-left: 0; padding-right: 0; } h1 { font-size: 1.4em; margin-bottom: 16px; padding-left: 12px; padding-right: 12px; } .card { padding: 16px; margin-bottom: 14px; border-radius: 8px; margin-left: 0; margin-right: 0; } .stats { gap: 10px; margin-bottom: 14px; justify-content: space-between; padding-left: 0; padding-right: 0; } .stat-item { flex: 1 1 auto; padding: 14px 10px; min-width: calc(25% - 8px); margin: 0; } .stat-item .number { font-size: 1.6em; } .stat-item .label { font-size: 0.75em; } .inventory-table { font-size: 0.8em; margin: 0; } .inventory-table th, .inventory-table td { padding: 8px 6px; } }
 
 /* Portrait orientation - 3 columns */
-@media (max-width: 480px) and (orientation: portrait) { .stats { flex-wrap: wrap; gap: 8px; } .stat-item { flex: 1 1 calc(33% - 6px); padding: 12px 8px; } .stat-item .number { font-size: 1.4em; } .stat-item .label { font-size: 0.7em; } .inventory-table { font-size: 0.75em; } .inventory-table th, .inventory-table td { padding: 6px 4px; } .inventory-table th[style*="width:200px"] { width: 90px !important; } .inventory-table th[style*="width:500px"] { width: 115px !important; } }
+@media (max-width: 480px) and (orientation: portrait) { .stats { flex-wrap: wrap; gap: 8px; } .stat-item { flex: 1 1 calc(33% - 6px); padding: 12px 8px; } .stat-item .number { font-size: 1.4em; } .stat-item .label { font-size: 0.7em; } .inventory-table { font-size: 0.75em; } .inventory-table th, .inventory-table td { padding: 6px 4px; } .inventory-table th[style*="width:200px"] { width: 90px !important; }  }
 
 /* Landscape orientation - 4 columns */
 /* Mobile Landscape (<=480px, landscape) - iPhone 17 */
@@ -37,7 +37,7 @@
     .section-title { font-size: 0.85em; padding: 6px; margin: 8px 0 4px 0; }
     .inventory-table { font-size: 0.75em; width: 100%; overflow-x: auto; }
     .inventory-table th, .inventory-table td { padding: 5px 3px; }
-    .inventory-table th[style*="width:200px"] { width: 70px !important; }
+    
     .inventory-table th[style*="width:500px"] { width: 100px !important; }
 }
 
@@ -215,8 +215,8 @@
                 else { if (qty > 0 || onlineQty > 0) inStock++; totalItems++; totalQty += qty; totalOnline += onlineQty; const checkbox = isEditMode ? '<input type="checkbox" ' + (isVerified ? 'checked' : '') + ' onchange="toggleVerified(\'' + item.code + '\', this.checked)">' : (isVerified ? '✅' : '⏳'); htmlHasStock += '<tr class="' + rowClass + '"><td class="code">' + (item.code || '-') + '</td><td class="name">' + (item.name || '-') + '</td><td class="' + qtyClass + '">' + qty + '</td><td class="' + qtyClass + '">' + onlineQty + '</td><td class="verified">' + checkbox + '</td><td>' + noteInput + '</td></tr>'; }
             });
             let html = '';
-            if (htmlHasStock) html += '<div class="section-title' + (isEditMode ? ' edit-mode' : '') + '">' + (isEditMode ? '✏️ 確認模式' : '📦 本次上傳品項') + (filter ? '（搜尋結果）' : '') + '</div><table class="inventory-table"><thead><tr><th style="width:200px;">品號</th><th style="width:750px;">品名</th><th style="width:70px;">實際</th><th style="width:70px;">網購</th><th style="width:60px;">✓</th><th style="width:auto;">備註</th></tr></thead><tbody>' + htmlHasStock + '</tbody></table>';
-            if (htmlZeroStock) html += '<div class="section-title zero-cat">📭 零庫存品項</div><table class="inventory-table"><thead><tr><th style="width:200px;">品號</th><th style="width:750px;">品名</th><th style="width:70px;">實際</th><th style="width:70px;">網購</th><th style="width:60px;">✓</th><th style="width:auto;">備註</th></tr></thead><tbody>' + htmlZeroStock + '</tbody></table>';
+            if (htmlHasStock) html += '<div class="section-title' + (isEditMode ? ' edit-mode' : '') + '">' + (isEditMode ? '✏️ 確認模式' : '📦 本次上傳品項') + (filter ? '（搜尋結果）' : '') + '</div><table class="inventory-table"><thead><tr><th>品號</th><th style="width:750px;">品名</th><th>實際</th><th>網購</th><th>✓</th><th style="width:auto;">備註</th></tr></thead><tbody>' + htmlHasStock + '</tbody></table>';
+            if (htmlZeroStock) html += '<div class="section-title zero-cat">📭 零庫存品項</div><table class="inventory-table"><thead><tr><th>品號</th><th style="width:750px;">品名</th><th>實際</th><th>網購</th><th>✓</th><th style="width:auto;">備註</th></tr></thead><tbody>' + htmlZeroStock + '</tbody></table>';
             if (!htmlHasStock && !htmlZeroStock) html = '<div class="card" style="text-align:center;padding:40px;color:#666;">找不到符合的商品</div>';
             if (latestTime) document.getElementById('uploadTime').textContent = '📅 最近上傳：' + new Date(latestTime).toLocaleString('zh-TW');
             document.getElementById('totalItems').textContent = inStock + zeroStock; document.getElementById('totalQty').textContent = totalQty; document.getElementById('totalOnline').textContent = totalOnline; document.getElementById('inStock').textContent = inStock; document.getElementById('zeroStock').textContent = zeroStock; document.getElementById('lastUpdated').textContent = '資料庫更新：' + (inventoryData.last_updated || '未知');
