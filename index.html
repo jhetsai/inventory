@@ -9,7 +9,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft JhengHei", sans-serif; background: #f0f2f5; min-height: 100vh; padding: 12px; }
         @media (min-width: 769px) { body { padding: 20px; } .container { max-width: 1200px; margin: 0 auto; } h1 { font-size: 1.8em; margin-bottom: 30px; } .card { padding: 24px; margin-bottom: 20px; } .stats { gap: 16px; } .stat-item { padding: 20px 24px; } .stat-item .number { font-size: 2em; } .inventory-table { font-size: 0.9em; } .inventory-table th, .inventory-table td { padding: 12px 10px; } }
-        @media (max-width: 480px) { body { padding: 10px; } .container { max-width: 100%; } h1 { font-size: 1.3em; margin-bottom: 16px; } .card { padding: 16px; margin-bottom: 12px; border-radius: 6px; } .stats { gap: 8px; margin-bottom: 12px; } .stat-item { flex: 1 1 calc(50% - 4px); padding: 12px 8px; } .stat-item .number { font-size: 1.5em; } .stat-item .label { font-size: 0.7em; } .inventory-table { font-size: 0.75em; } .inventory-table th, .inventory-table td { padding: 6px 4px; } .inventory-table .code { font-size: 0.85em; font-weight: 700; color: #0d47a1; } .inventory-table .name { max-width: 100px; font-size: 0.7em; } }
+        @media (max-width: 480px) { body { padding: 10px; } .container { max-width: 100%; } h1 { font-size: 1.3em; margin-bottom: 16px; } .card { padding: 16px; margin-bottom: 12px; border-radius: 6px; } .stats { gap: 8px; margin-bottom: 12px; } .stat-item { flex: 1 1 calc(50% - 4px); padding: 12px 8px; } .stat-item .number { font-size: 1.5em; } .stat-item .label { font-size: 0.7em; } .inventory-table { font-size: 0.75em; } .inventory-table th, .inventory-table td { padding: 6px 4px; } .inventory-table .code { font-size: 0.85em; font-weight: 700; color: #0d47a1; } .inventory-table .name { max-width: 80px; font-size: 0.7em; } }
         .card { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; }
         .card h2 { color: #333; margin-bottom: 16px; font-size: 1.1em; font-weight: 600; border-bottom: 2px solid #1976d2; padding-bottom: 8px; }
         .info-box { background: #f5f5f5; border-radius: 4px; padding: 16px; margin-bottom: 16px; font-size: 0.9em; color: #555; border-left: 4px solid #1976d2; }
@@ -19,16 +19,20 @@
         .stat-item.stock { background: #2e7d32; }
         .stat-item .number { font-weight: bold; }
         .stat-item .label { opacity: 0.9; }
-        .inventory-table { width: 100%; border-collapse: collapse; background: white; }
+        .inventory-table { width: 100%; border-collapse: collapse; background: white; table-layout: fixed; }
         .inventory-table th { background: #455a64; color: white; text-align: center; font-weight: 600; white-space: nowrap; }
-        .inventory-table td { border-bottom: 1px solid #e0e0e0; text-align: center; }
+        .inventory-table td { border-bottom: 1px solid #e0e0e0; text-align: center; vertical-align: middle; }
         .inventory-table tbody tr:hover { background: #f5f5f5; }
         .inventory-table .code { font-weight: 700; color: #0d47a1; font-family: monospace; }
-        .inventory-table .name { text-align: left; overflow: hidden; text-overflow: ellipsis; }
+        .inventory-table .name { text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .inventory-table .qty { font-weight: bold; }
         .inventory-table .qty.zero { color: #999; }
         .inventory-table .qty.has-stock { color: #2e7d32; }
         .inventory-table .verified { font-size: 1.2em; }
+        .inventory-table input[type="checkbox"] { cursor: pointer; accent-color: #1976d2; width: 20px; height: 20px; }
+        .inventory-table input[type="text"] { width: 100%; padding: 6px; border: 1px solid #bdbdbd; border-radius: 4px; font-size: 0.85em; }
+        .inventory-table input[type="text"]:focus { outline: none; border-color: #1976d2; }
+        .inventory-table input[type="text"]:disabled { background: #f5f5f5; color: #666; }
         .inventory-table tr.verified-row { background: #e8f5e9; }
         .last-updated { text-align: right; color: #888; font-size: 0.85em; margin-top: 16px; }
         .action-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
@@ -184,19 +188,22 @@
                 }
                 const qtyClass = isBothZero ? 'qty zero' : 'qty has-stock';
                 const rowClass = isVerified ? 'verified-row' : '';
+                const noteInput = isEditMode 
+                    ? '<input type="text" value="' + note + '" placeholder="備註" onchange="updateNote(\'' + item.code + '\', this.value)">' 
+                    : (note ? note : '-');
                 if (isBothZero) {
                     zeroStock++;
-                    htmlZeroStock += '<tr class="' + rowClass + '"><td class="code">' + (item.code || '-') + '</td><td class="name">' + (item.name || '-') + '</td><td class="' + qtyClass + '">' + qty + '</td><td class="' + qtyClass + '">' + onlineQty + '</td><td class="verified">✅</td><td>' + note + '</td></tr>';
+                    htmlZeroStock += '<tr class="' + rowClass + '"><td class="code">' + (item.code || '-') + '</td><td class="name">' + (item.name || '-') + '</td><td class="' + qtyClass + '">' + qty + '</td><td class="' + qtyClass + '">' + onlineQty + '</td><td class="verified">✅</td><td>' + (note || '-') + '</td></tr>';
                 } else {
                     if (qty > 0 || onlineQty > 0) inStock++;
                     totalItems++; totalQty += qty; totalOnline += onlineQty;
                     const checkbox = isEditMode ? '<input type="checkbox" ' + (isVerified ? 'checked' : '') + ' onchange="toggleVerified(\'' + item.code + '\', this.checked)">' : (isVerified ? '✅' : '⏳');
-                    htmlHasStock += '<tr class="' + rowClass + '"><td class="code">' + (item.code || '-') + '</td><td class="name">' + (item.name || '-') + '</td><td class="' + qtyClass + '">' + qty + '</td><td class="' + qtyClass + '">' + onlineQty + '</td><td class="verified">' + checkbox + '</td><td>' + note + '</td></tr>';
+                    htmlHasStock += '<tr class="' + rowClass + '"><td class="code">' + (item.code || '-') + '</td><td class="name">' + (item.name || '-') + '</td><td class="' + qtyClass + '">' + qty + '</td><td class="' + qtyClass + '">' + onlineQty + '</td><td class="verified">' + checkbox + '</td><td>' + noteInput + '</td></tr>';
                 }
             });
             let html = '';
-            if (htmlHasStock) html += '<div class="section-title' + (isEditMode ? ' edit-mode' : '') + '">' + (isEditMode ? '✏️ 確認模式' : '📦 本次上傳品項') + (filter ? '（搜尋結果）' : '') + '</div><table class="inventory-table"><thead><tr><th>品號</th><th>品名</th><th>實際</th><th>網購</th><th>✓</th><th>備註</th></tr></thead><tbody>' + htmlHasStock + '</tbody></table>';
-            if (htmlZeroStock) html += '<div class="section-title zero-cat">📭 零庫存品項</div><table class="inventory-table"><thead><tr><th>品號</th><th>品名</th><th>實際</th><th>網購</th><th>✓</th><th>備註</th></tr></thead><tbody>' + htmlZeroStock + '</tbody></table>';
+            if (htmlHasStock) html += '<div class="section-title' + (isEditMode ? ' edit-mode' : '') + '">' + (isEditMode ? '✏️ 確認模式' : '📦 本次上傳品項') + (filter ? '（搜尋結果）' : '') + '</div><table class="inventory-table"><thead><tr><th style="width:90px;">品號</th><th>品名</th><th style="width:50px;">實際</th><th style="width:50px;">網購</th><th style="width:50px;">✓</th><th>備註</th></tr></thead><tbody>' + htmlHasStock + '</tbody></table>';
+            if (htmlZeroStock) html += '<div class="section-title zero-cat">📭 零庫存品項</div><table class="inventory-table"><thead><tr><th style="width:90px;">品號</th><th>品名</th><th style="width:50px;">實際</th><th style="width:50px;">網購</th><th style="width:50px;">✓</th><th>備註</th></tr></thead><tbody>' + htmlZeroStock + '</tbody></table>';
             if (!htmlHasStock && !htmlZeroStock) html = '<div class="card" style="text-align:center;padding:40px;color:#666;">找不到符合的商品</div>';
             if (latestTime) document.getElementById('uploadTime').textContent = '📅 最近上傳：' + new Date(latestTime).toLocaleString('zh-TW');
             document.getElementById('totalItems').textContent = totalItems;
@@ -214,6 +221,11 @@
         function toggleVerified(code, checked) {
             inventoryData.categories.forEach(cat => cat.items.forEach(item => {
                 if (item.code === code) { item.verified = checked; showToast(checked ? '✅ 已確認：' + item.name : '⏳ 已取消：' + item.name); }
+            }));
+        }
+        function updateNote(code, value) {
+            inventoryData.categories.forEach(cat => cat.items.forEach(item => {
+                if (item.code === code) { item.note = value; showToast('📝 已更新備註'); }
             }));
         }
         function showToast(msg) { const toast = document.getElementById('toast'); toast.textContent = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2000); }
