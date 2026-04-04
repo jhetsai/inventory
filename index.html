@@ -91,7 +91,22 @@
         .scanner-content h3 { margin-bottom: 16px; text-align: center; }
         #qr-reader { width: 100%; }
         .close-scanner { margin-top: 12px; width: 100%; background: #666; color: white; padding: 12px; border: none; border-radius: 8px; font-size: 1em; cursor: pointer; }
-    </style>
+    
+        .upload-btn { background: #7b1fa2; color: white; }
+        .upload-btn:hover { background: #6a1b9a; }
+        #upload-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; padding: 20px; }
+        #upload-modal.active { display: flex; align-items: center; justify-content: center; }
+        .upload-content { background: white; padding: 30px; border-radius: 12px; max-width: 400px; width: 90%; text-align: center; }
+        .upload-content h3 { margin-bottom: 20px; color: #1a237e; }
+        .upload-content input[type="file"] { margin: 20px 0; }
+        .upload-preview { max-width: 100%; max-height: 300px; margin: 10px 0; display: none; }
+        .close-upload { background: #666; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+        .upload-submit { background: #7b1fa2; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 1em; }
+        .upload-status { margin: 10px 0; padding: 10px; border-radius: 6px; display: none; }
+        .upload-status.success { background: #d4edda; color: #155724; }
+        .upload-status.error { background: #f8d7da; color: #721c24; }
+
+</style>
 </head>
 <body><style>
     #password-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #1a237e; display: flex; align-items: center; justify-content: center; z-index: 9999; }
@@ -101,6 +116,21 @@
     #password-box button { padding: 14px 32px; font-size: 1em; background: #1a237e; color: white; border: none; border-radius: 8px; cursor: pointer; }
     #password-box button:hover { background: #3949ab; }
     #password-error { color: #d32f2f; margin-top: 12px; display: none; }
+
+        .upload-btn { background: #7b1fa2; color: white; }
+        .upload-btn:hover { background: #6a1b9a; }
+        #upload-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; padding: 20px; }
+        #upload-modal.active { display: flex; align-items: center; justify-content: center; }
+        .upload-content { background: white; padding: 30px; border-radius: 12px; max-width: 400px; width: 90%; text-align: center; }
+        .upload-content h3 { margin-bottom: 20px; color: #1a237e; }
+        .upload-content input[type="file"] { margin: 20px 0; }
+        .upload-preview { max-width: 100%; max-height: 300px; margin: 10px 0; display: none; }
+        .close-upload { background: #666; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+        .upload-submit { background: #7b1fa2; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 1em; }
+        .upload-status { margin: 10px 0; padding: 10px; border-radius: 6px; display: none; }
+        .upload-status.success { background: #d4edda; color: #155724; }
+        .upload-status.error { background: #f8d7da; color: #721c24; }
+
 </style>
 
 <div id="password-overlay">
@@ -110,6 +140,19 @@
         <button onclick="checkPassword()">登入</button>
         <p id="password-error">密碼錯誤，請再試一次</p>
     </div>
+
+<div id="upload-modal">
+    <div class="upload-content">
+        <h3>📷 上傳庫存照片</h3>
+        <p>選擇發票或庫存照片進行 AI 辨識</p>
+        <input type="file" id="photo-input" accept="image/*" onchange="previewPhoto()">
+        <img id="upload-preview" class="upload-preview" alt="預覽">
+        <div id="upload-status" class="upload-status"></div>
+        <button class="upload-submit" onclick="uploadPhoto()">上傳並分析</button><br>
+        <button class="close-upload" onclick="closeUploadModal()">關閉</button>
+    </div>
+</div>
+
 </div>
 
 <script>
@@ -142,6 +185,7 @@ function checkPassword() {
             <input type="text" id="searchInput" placeholder="🔍 搜尋品號或品名...">
             <button class="btn btn-scan" onclick="openScanner()">📷 掃描</button>
             <button class="btn btn-edit" id="editBtn" onclick="toggleEditMode()">✏️ 確認</button>
+            <button class="btn upload-btn" onclick="openUploadModal()">📷 上傳</button>
             <button class="btn btn-done" id="doneBtn" onclick="toggleEditMode()">✅ 完成</button>
         </div>
         <div id="inventoryList"></div>
@@ -295,5 +339,6 @@ function checkPassword() {
 
     loadInventory();
     </script>
+<script src="upload.js"></script>
 </body>
 </html>
